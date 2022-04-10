@@ -24,15 +24,15 @@ def detox(_input):
     return new_name
 
 
-def process(subdir, item):
-    old_name = Path(subdir) / item
-    new_name = Path(subdir) / detox(item)
+def process(root, item):
+    old_name = Path(root) / item
+    new_name = Path(root) / detox(item)
     if Path(new_name).exists():
         basename = Path(new_name).stem
         suffix = Path(new_name).suffix
         i = 1
         while True:
-            new_name = Path(subdir) / f'{basename}-{i}{suffix}'
+            new_name = Path(root) / f'{basename}-{i}{suffix}'
             if not Path(new_name).exists():
                 break
             else:
@@ -79,17 +79,17 @@ def main():
     if args.recursive:
         if not Path(args.input).is_dir():
             raise ValueError(
-                'The `--recursive` flag requires a directory input not a file!'
+                'The `--recursive` flag requires a directory input, not a file!'
             )
-        for subdir, dirs, files in os.walk(args.input, topdown=False):
+        for root, dirs, files in os.walk(args.input, topdown=False):
             if files:
                 for file in files:
-                    old_file, new_file = process(subdir, file)
+                    old_file, new_file = process(root, file)
                     os.rename(old_file, new_file)
 
             if dirs:
                 for _dir in dirs:
-                    old_dir, new_dir = process(subdir, _dir)
+                    old_dir, new_dir = process(root, _dir)
                     os.rename(old_dir, new_dir)
 
     if Path(Path(args.input).parent / detox(args.input)).exists():
