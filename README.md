@@ -1,4 +1,6 @@
-# detox[^1]
+# detox
+
+- `detox`[^1] is a Python tool that can be used to rename directories/files with problematic characters or spaces.
 
 ## Requirements
 
@@ -54,7 +56,7 @@ detox -r -i 'foo bar'
 #     └── foo_bar__copy_2.jpg
 ```
 
-- `detox` avoids overwriting if the detoxed name already exists:
+- `detox` avoids overwriting if the detoxed name already exists in recursive runs:
 
 ```shell
 # foo foo
@@ -68,4 +70,4 @@ detox -r -i 'foo foo'
 #   └── foo_bar-1.jpg
 ```
 
-[^1]: The name is inspired by the tool [detox](https://github.com/dharple/detox)
+[^1]: The name is inspired by the tool [detox](https://linux.die.net/man/1/detox)

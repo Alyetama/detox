@@ -24,6 +24,25 @@ def detox(_input):
     return new_name
 
 
+def process(subdir, item):
+    old_name = Path(subdir) / item
+    new_name = Path(subdir) / detox(item)
+    if Path(new_name).exists():
+        basename = Path(new_name).stem
+        suffix = Path(new_name).suffix
+        i = 1
+        while True:
+            new_name = Path(subdir) / f'{basename}-{i}{suffix}'
+            if not Path(new_name).exists():
+                break
+            else:
+                i += 1
+
+    if old_name != new_name:
+        print(f'\33[31m\'{old_name}\'\x1b[0m --> \33[32m\'{new_name}\'\x1b[0m')
+    return old_name, new_name
+
+
 def opts():
     parser = argparse.ArgumentParser()
     parser.add_argument('-i',
@@ -50,29 +69,10 @@ def opts():
     parser.add_argument(
         '-l',
         '--keep-leading',
-        help='Keep the leading character if exists (e.g., \'_foo\'; default: False)',
+        help=
+        'Keep the leading character if exists (e.g., \'_foo\'; default: False)',
         action='store_true')
     return parser.parse_args()
-
-
-def process(subdir, item):
-    old_name = Path(subdir) / item
-    new_name = Path(subdir) / detox(item)
-    if Path(new_name).exists():
-        basename = Path(new_name).stem
-        suffix = Path(new_name).suffix
-        i = 1
-        while True:
-            new_name = Path(subdir) / f'{basename}-{i}{suffix}'
-            if not Path(new_name).exists():
-                break
-            else:
-                i += 1
-
-    if old_name != new_name:
-        print(f'\33[31m\'{old_name}\'\x1b[0m --> \33[32m\'{new_name}\'\x1b[0m')
-    return old_name, new_name
-
 
 
 def main():
@@ -92,6 +92,8 @@ def main():
                     old_dir, new_dir = process(subdir, _dir)
                     os.rename(old_dir, new_dir)
 
+    if Path(Path(args.input).parent / detox(args.input)).exists():
+        raise FileExistsError('A file with the new name already exists!')
     os.rename(args.input, Path(args.input).parent / detox(args.input))
 
 
