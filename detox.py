@@ -8,6 +8,10 @@ import string
 from pathlib import Path
 
 
+def print_change(pre, post):
+    print(f'\33[31m\'{Path(pre).name}\'\x1b[0m --> \33[32m\'{Path(post).name}\'\x1b[0m')
+
+
 def detox(_input):
     basename = Path(_input).name
     exclude = ''.join([
@@ -15,18 +19,22 @@ def detox(_input):
         if x not in list('-_.')
     ])
     new_name = re.sub(fr"[{exclude}]", args.using, basename)
+    if new_name == basename:
+        return
 
     if not args.keep_trailing and Path(new_name).stem.endswith(args.using):
         new_name = f'{Path(new_name).stem[:-1]}{Path(new_name).suffix}'
     if not args.keep_leading and new_name.startswith(args.using):
         new_name = new_name[1:]
-
     return new_name
 
 
 def process(root, item):
     old_name = Path(root) / item
-    new_name = Path(root) / detox(item)
+    detoxed = detox(item)
+    if not detoxed:
+        return (None, None)
+    new_name = Path(root) / detoxed
     if Path(new_name).exists():
         basename = Path(new_name).stem
         suffix = Path(new_name).suffix
@@ -37,9 +45,8 @@ def process(root, item):
                 break
             else:
                 i += 1
-
     if old_name != new_name:
-        print(f'\33[31m\'{old_name}\'\x1b[0m --> \33[32m\'{new_name}\'\x1b[0m')
+        print_change(old_name, new_name)
     return old_name, new_name
 
 
@@ -72,11 +79,18 @@ def opts():
         help=
         'Keep the leading character if exists (e.g., \'_foo\'; default: False)',
         action='store_true')
+    parser.add_argument(
+        '-n',
+        '--dry-run',
+        help='Do a trial run with no permanent changes',
+        action='store_true')
     return parser.parse_args()
 
 
 def main():
     if args.recursive:
+        if args.dry_run:
+            print('NOTICE: If multiple files have the same detoxed name, `--dry-run` won\'t show the handling of existing names.')
         if not Path(args.input).is_dir():
             raise ValueError(
                 'The `--recursive` flag requires a directory input, not a file!'
@@ -85,16 +99,23 @@ def main():
             if files:
                 for file in files:
                     old_file, new_file = process(root, file)
-                    os.rename(old_file, new_file)
+                    if not args.dry_run and (old_file, new_file) != (None, None):
+                        s.rename(old_file, new_file)
 
             if dirs:
                 for _dir in dirs:
                     old_dir, new_dir = process(root, _dir)
-                    os.rename(old_dir, new_dir)
+                    if not args.dry_run and (old_file, new_file) != (None, None):
+                        os.rename(old_dir, new_dir)
 
     if Path(Path(args.input).parent / detox(args.input)).exists():
         raise FileExistsError('A file with the new name already exists!')
-    os.rename(args.input, Path(args.input).parent / detox(args.input))
+
+    old_item, new_item = args.input, Path(args.input).parent / detox(args.input)
+    print_change(old_item, new_item)
+
+    if not args.dry_run:
+        os.rename(_old_name, _new_name)
 
 
 if __name__ == '__main__':
