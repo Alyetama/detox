@@ -11,11 +11,12 @@
 ```shell
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/Alyetama/detox/main/install.sh)"
 ```
+- You can use the same command to update to the latest release if `detox` is already installed.
 
 ## Usage
 
 ```
-usage: detox [-h] -i INPUT [-r] [-u USING] [-t] [-l]
+usage: detox [-h] -i INPUT [-r] [-u USING] [-t] [-l] [-n]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -29,6 +30,7 @@ optional arguments:
                         default: False)
   -l, --keep-leading    Keep the leading character if exists (e.g., '_foo';
                         default: False)
+  -n, --dry-run         Do a trial run with no permanent changes
 ```
 
 ## Examples
