@@ -3,13 +3,15 @@
 
 import argparse
 import re
+from pathlib import Path
 import os
 import string
-from pathlib import Path
 
 
 def print_change(pre, post):
-    print(f'\33[31m\'{Path(pre).name}\'\x1b[0m --> \33[32m\'{Path(post).name}\'\x1b[0m')
+    print(
+        f'\33[31m\'{Path(pre).name}\'\x1b[0m --> \33[32m\'{Path(post).name}\'\x1b[0m'
+    )
 
 
 def detox(_input):
@@ -61,12 +63,13 @@ def opts():
                         '--recursive',
                         help='Rename files recursively',
                         action='store_true')
-    parser.add_argument('-u',
-                        '--using',
-                        help='Replace spaces and unsafe characters with this '
-                        'character (default: \'_\')',
-                        type=str,
-                        default='_')
+    parser.add_argument(
+        '-u',
+        '--using',
+        help=
+        'Replace spaces and unsafe characters with this character (default: \'_\')',
+        type=str,
+        default='_')
     parser.add_argument(
         '-t',
         '--keep-trailing',
@@ -79,18 +82,19 @@ def opts():
         help=
         'Keep the leading character if exists (e.g., \'_foo\'; default: False)',
         action='store_true')
-    parser.add_argument(
-        '-n',
-        '--dry-run',
-        help='Do a trial run with no permanent changes',
-        action='store_true')
+    parser.add_argument('-n',
+                        '--dry-run',
+                        help='Do a trial run with no permanent changes',
+                        action='store_true')
     return parser.parse_args()
 
 
 def main():
     if args.recursive:
         if args.dry_run:
-            print('NOTICE: If multiple files have the same detoxed name, `--dry-run` won\'t show the handling of existing names.')
+            print(
+                'NOTICE: If multiple files have the same detoxed name, `--dry-run` won\'t show the handling of existing names.'
+            )
         if not Path(args.input).is_dir():
             raise ValueError(
                 'The `--recursive` flag requires a directory input, not a file!'
@@ -99,23 +103,26 @@ def main():
             if files:
                 for file in files:
                     old_file, new_file = process(root, file)
-                    if not args.dry_run and (old_file, new_file) != (None, None):
+                    if not args.dry_run and (old_file, new_file) != (None,
+                                                                     None):
                         s.rename(old_file, new_file)
 
             if dirs:
                 for _dir in dirs:
                     old_dir, new_dir = process(root, _dir)
-                    if not args.dry_run and (old_file, new_file) != (None, None):
+                    if not args.dry_run and (old_file, new_file) != (None,
+                                                                     None):
                         os.rename(old_dir, new_dir)
 
     if Path(Path(args.input).parent / detox(args.input)).exists():
         raise FileExistsError('A file with the new name already exists!')
 
-    old_item, new_item = args.input, Path(args.input).parent / detox(args.input)
+    old_item, new_item = args.input, Path(args.input).parent / detox(
+        args.input)
     print_change(old_item, new_item)
 
     if not args.dry_run:
-        os.rename(_old_name, _new_name)
+        os.rename(old_item, new_item)
 
 
 if __name__ == '__main__':
