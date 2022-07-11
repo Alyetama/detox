@@ -11,7 +11,7 @@ from typing import List, Optional, Union, Tuple
 class Detox:
 
     def __init__(self,
-                 path: Union[list[str], Path, str],
+                 path: Union[List[str], Path, str],
                  recursive: bool = False,
                  replace_with: str = '_',
                  keep_trailing: bool = False,
@@ -54,19 +54,19 @@ class Detox:
     def _dedupe(self, root: Union[Path, str],
                 item: str) -> Optional[Tuple[Path, Path]]:
         if not Path(item).is_file():
-            old_name = Path(root) / item
+            old_name = Path(root) / Path(item)
         else:
             old_name = item
         detoxed = self._detox_path(item)
         if not detoxed:
             return
-        new_name = Path(root) / detoxed
+        new_name = Path(root) / Path(detoxed)
         if Path(new_name).exists():
             basename = Path(new_name).stem
             suffix = Path(new_name).suffix
             i = 1
             while True:
-                new_name = Path(root) / f'{basename}-{i}{suffix}'
+                new_name = Path(root) / Path(f'{basename}-{i}{suffix}')
                 if not Path(new_name).exists():
                     break
                 else:

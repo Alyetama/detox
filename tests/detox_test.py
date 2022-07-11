@@ -6,7 +6,7 @@ import shutil
 import unittest
 from pathlib import Path
 
-from detox import detox
+from detoxpy import detox
 
 
 class TestDetox(unittest.TestCase):
@@ -17,11 +17,13 @@ class TestDetox(unittest.TestCase):
     def test_simple_detox(self):
         Path('foo bar').mkdir(exist_ok=True)
         bad_basenames = ['foo bar', 'foo%bar', 'foo&bar', 'foo^bar']
-        bad_paths = ['foo bar'
-                     ] + [f'foo bar/{x}.txt' for x in bad_basenames[1:]]
+        bad_paths = [Path('foo bar')] + [
+            Path('foo bar') / f'{x}.txt' for x in bad_basenames[1:]
+        ]
         good_basenames = ['foo_bar', 'foo_bar', 'foo_bar-1', 'foo_bar-2']
-        good_paths = ['foo_bar'
-                      ] + [f'foo_bar/{x}.txt' for x in good_basenames[1:]]
+        good_paths = [Path('foo_bar')] + [
+            Path('foo_bar') / f'{x}.txt' for x in good_basenames[1:]
+        ]
         for bad_path in bad_paths:
             Path(bad_path).touch()
 
@@ -32,12 +34,12 @@ class TestDetox(unittest.TestCase):
         shutil.rmtree('foo_bar')
 
     def test_nested_detox(self):
-        bad_nested_parent = 'detox ^& test  # test/make^^f__lgr/msc_{}__!_6__^^___😀 ksm'  # noqa E501
-        good_nested_parent = 'detox_test_test/make_f_lgr/msc_6_ksm'
-        bad_nested_dir = f"{bad_nested_parent}/$untitled|fff_\&_🚀_'_folder"  # noqa: E501
-        good_nested_dir = f'{good_nested_parent}/untitled_fff_folder'
-        bad_nested_file = f'{bad_nested_parent}/pypy-😀🚀_^^^_"$_6_🚀.py'  # noqa: E501
-        good_nested_file = f'{good_nested_parent}/pypy-_6.py'  # noqa: E501
+        bad_nested_parent = Path('detox ^& test  # test/make^^f__lgr/msc_{}__!_6__^^___😀 ksm')  # noqa E501
+        good_nested_parent = Path('detox_test_test/make_f_lgr/msc_6_ksm')
+        bad_nested_dir = bad_nested_parent / "$untitled|fff_\&_🚀_'_folder"  # noqa: E501
+        good_nested_dir = good_nested_parent / 'untitled_fff_folder'
+        bad_nested_file = bad_nested_parent / 'pypy-😀🚀_^^^_"$_6_🚀.py'  # noqa: E501
+        good_nested_file = good_nested_parent / 'pypy-_6.py'  # noqa: E501
 
         Path(bad_nested_dir).mkdir(parents=True)
         Path(bad_nested_file).touch()
