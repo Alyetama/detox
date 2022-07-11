@@ -1,6 +1,9 @@
 # detox
 
-- `detox`[^1] is a Python tool that can be used to rename directories/files with unsafe characters or spaces.
+`detox` is a Python tool that can be used to rename directories/files with unsafe characters or spaces[^1].
+
+[![Supported Python versions](https://img.shields.io/badge/Python-%3E=3.6-blue.svg?logo=python)](https://www.python.org/downloads/) [![PEP8](https://img.shields.io/badge/Code%20style-PEP%208-orange.svg?logo=python)](https://www.python.org/dev/peps/pep-0008/) 
+ [![Poetry-build](https://github.com/Alyetama/detox/actions/workflows/poetry-build.yml/badge.svg)](https://github.com/Alyetama/detox/actions/workflows/poetry-build.yml)
 
 ## Requirements
 
@@ -76,4 +79,4 @@ detox -r -i 'foo foo'
 #   └── foo_bar-1.jpg
 ```
 
-[^1]: The name is inspired by the tool [detox](https://linux.die.net/man/1/detox)
+[^1]: The name `detox` is inspired by the tool [detox](https://linux.die.net/man/1/detox).
