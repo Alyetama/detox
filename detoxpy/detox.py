@@ -128,10 +128,10 @@ class Detox:
 
         for change in changes:
             if self.plain_print:
-                print(change[1].name)
+                print(Path(change[1]).name)
             else:
-                print(f'\33[31m\'{change[0].name}\'\x1b[0m --> '
-                      f'\33[32m\'{change[1].name}\'\x1b[0m')
+                print(f'\33[31m\'{Path(change[0]).name}\'\x1b[0m --> '
+                      f'\33[32m\'{Path(change[1]).name}\'\x1b[0m')
 
         changes = [x for x in changes if Path(x[1]).exists()]
         return changes
